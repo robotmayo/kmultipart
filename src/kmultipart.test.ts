@@ -42,7 +42,7 @@ test.before(async t => {
       const s = app.listen(0);
       listeners.push(s);
       s.once("listening", () => {
-        s.off("error", reject);
+        s.removeListener("error", reject);
         resolve({ server: s, ...(s.address as any)() });
       }).once("error", reject);
     });
