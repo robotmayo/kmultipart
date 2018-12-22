@@ -1,13 +1,13 @@
 import anyTest, { TestInterface } from "ava";
 import * as http from "http";
-import {
+import multipart, {
   ConcatStream,
-  multipart,
   MemoryStorage,
   KMultipartFile,
   MemoryStorageFile,
   DiskStorage,
-  DiskStorageFile
+  DiskStorageFile,
+  StorageEngine
 } from ".";
 import { createReadStream, readFileSync, promises, statSync } from "fs";
 import * as Koa from "koa";
@@ -275,4 +275,39 @@ test("multipart > fields", async t => {
     headers: form.getHeaders(),
     body: form
   });
+});
+
+test("multipart > broken storage", async t => {
+  const app = new Koa();
+  t.plan(3);
+  const badStorage: StorageEngine = {
+    async handleFile(h) {
+      throw new Error("Help im alive");
+    }
+  };
+  app
+    .use(async (ctx, next) => {
+      try {
+        await multipart({ storageEngine: badStorage })(ctx, next);
+      } catch (err) {
+        t.is(err.message, "Help im alive");
+        ctx.body = "beep beep";
+        ctx.status = 500;
+      }
+    })
+    .use(ctx => {
+      t.fail("Should never make it here");
+    });
+  const { port } = await t.context.listen(app);
+  const form = new FormData();
+
+  form.append("text", createReadStream(FIXTURE_PATHS.SHORT_TEXT));
+  const res = await fetch("http://localhost:" + port, {
+    method: "post",
+    headers: form.getHeaders(),
+    body: form
+  });
+  t.is(res.status, 500);
+  const txt = await res.text();
+  t.is(txt, "beep beep");
 });

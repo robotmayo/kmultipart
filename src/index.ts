@@ -33,7 +33,7 @@ export interface HandleFileObj {
   mimetype: string;
 }
 
-interface StorageEngine {
+export interface StorageEngine {
   handleFile: (h: HandleFileObj) => Promise<any>;
 }
 
@@ -160,7 +160,7 @@ class Counter extends EventEmitter {
   }
 }
 
-export function multipart(multipartOpts: MultiPartOptions) {
+export default function multipart(multipartOpts: MultiPartOptions) {
   const opts = Object.assign({}, defaultOpts, multipartOpts);
   assert(opts.storageEngine != null, "a storage engine must be provided");
 

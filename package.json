@@ -1,7 +1,7 @@
 {
   "name": "@robotmayo/kmultipart",
   "version": "0.3.0",
-  "description": "Body Parser for koa",
+  "description": "A multipart parser for koa.",
   "main": "build/index.js",
   "scripts": {
     "test": "ava",
