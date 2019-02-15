@@ -15,6 +15,7 @@ import { resolve, basename } from "path";
 import fetch from "node-fetch";
 import * as FormData from "form-data";
 import { tmpdir } from "os";
+import { randomBytes } from "crypto";
 const FIXTURE_DIR = resolve(__dirname, "..", "fixtures");
 const FIXTURE_PATHS = {
   SHORT_TEXT: resolve(FIXTURE_DIR, "short.txt"),
@@ -205,18 +206,20 @@ test("multipart > disk storage", async t => {
 
 test("multipart > disk storage > file and destination functions", async t => {
   const app = new Koa();
-  t.plan(2);
+  t.plan(4);
   const tdir = tmpdir();
+  const fileName = randomBytes(8).toString("hex");
   const storage = new DiskStorage({
-    destinationGenerator: async h => `TEST_FILE${tdir}`,
-    filenameGenerator: async h => `TEST_START${h.filename}TEST_END`
+    genDestination: async h => tdir,
+    genFileName: async h => fileName
   });
   app.use(multipart({ storageEngine: storage })).use(ctx => {
     ctx.body = "im done";
     const files = ctx.request.files as DiskStorageFile[];
-    t.is(files[0].filename, `TEST_START${files[0].filename}TEST_END`);
+    t.is(files[0].filename, fileName);
     t.truthy(statSync(files[0].path));
     t.is(files[0].size, readFileSync(FIXTURE_PATHS.SMALL_JPEG).byteLength);
+    t.notThrows(() => statSync(files[0].path));
   });
   const { port } = await t.context.listen(app);
   const form = new FormData();
@@ -230,12 +233,13 @@ test("multipart > disk storage > file and destination functions", async t => {
 
 test("multipart > disk storage > multiple files", async t => {
   const app = new Koa();
-  t.plan(7);
+  t.plan(10);
   const storage = new DiskStorage({ destination: tmpdir() });
   app.use(multipart({ storageEngine: storage })).use(ctx => {
     ctx.body = "im done";
     const files = ctx.request.files as DiskStorageFile[];
     for (const file of files) {
+      t.notThrows(() => statSync(file.path));
       switch (file.originalFilename) {
         case basename(FIXTURE_PATHS.SMALL_JPEG):
           t.is(file.fieldname, "animage");

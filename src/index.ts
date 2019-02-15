@@ -84,12 +84,12 @@ export class DiskStorage implements StorageEngine {
   ) => Promise<{ destination: string; filename: string }>;
 
   constructor(opts: {
-    filenameGenerator?: (h: HandleFileObj) => Promise<string>;
-    destinationGenerator?: (h: HandleFileObj) => Promise<string>;
+    genFileName?: (h: HandleFileObj) => Promise<string>;
+    genDestination?: (h: HandleFileObj) => Promise<string>;
     destination?: string;
   }) {
     assert(
-      (!opts.destination && !opts.destinationGenerator) === false,
+      (!opts.destination && !opts.genDestination) === false,
       "must specify a destination or destination generator function"
     );
 
@@ -100,18 +100,20 @@ export class DiskStorage implements StorageEngine {
       );
     }
 
-    if (opts.destinationGenerator) {
+    if (opts.genDestination) {
       assert(
-        typeof opts.destinationGenerator === "function",
+        typeof opts.genDestination === "function",
         "destinationGenerator must be a function"
       );
+      this.genDestination = opts.genDestination;
     }
 
-    if (opts.filenameGenerator) {
+    if (opts.genFileName) {
       assert(
-        typeof opts.filenameGenerator === "function",
+        typeof opts.genFileName === "function",
         "filenameGenerator must be a function"
       );
+      this.genFileName = opts.genFileName;
     }
     this.destination = opts.destination;
   }
