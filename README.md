@@ -47,7 +47,7 @@ A custom storage engine is simple an object or class instance with the function 
 `{handleFile(handleFilePart)}`
 
 `handleFilePart`
-| Parameter | Type | Description |
+| Parameter | Type | Description | |
 | ------------- | ------------- | ----------------------------------------- |
 | file | NodeJS.ReadableStream | The file stream |
 | filename | string | the original filename as it appeared on their computer |
