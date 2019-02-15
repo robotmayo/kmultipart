@@ -56,3 +56,7 @@ A custom storage engine is simple an object or class instance with the function 
 | ctx       | Koa.Context           | the koa context                                        |
 | encoding  | string                | file encoding                                          |
 | mimetype  | string                | file mimetype                                          |
+
+## Why?
+
+The major existing solutions dont support custom storage engines. Also writing my own sounded fun.
