@@ -47,11 +47,12 @@ A custom storage engine is simple an object or class instance with the function 
 `{handleFile(handleFilePart)}`
 
 `handleFilePart`
-| Parameter | Type | Description | |
-| ------------- | ------------- | ----------------------------------------- |
-| file | NodeJS.ReadableStream | The file stream |
-| filename | string | the original filename as it appeared on their computer |
-| fieldname | string | the fieldname of the object |
-| ctx | Koa.Context | the koa context |
-| encoding | string | file encoding |
-| mimetype | string | file mimetype |
+
+| Parameter | Type                  | Description                                            |
+| --------- | --------------------- | ------------------------------------------------------ |
+| file      | NodeJS.ReadableStream | The file stream                                        |
+| filename  | string                | the original filename as it appeared on their computer |
+| fieldname | string                | the fieldname of the object                            |
+| ctx       | Koa.Context           | the koa context                                        |
+| encoding  | string                | file encoding                                          |
+| mimetype  | string                | file mimetype                                          |
