@@ -203,6 +203,31 @@ test("multipart > disk storage", async t => {
   });
 });
 
+test("multipart > disk storage > file and destination functions", async t => {
+  const app = new Koa();
+  t.plan(2);
+  const tdir = tmpdir();
+  const storage = new DiskStorage({
+    destinationGenerator: async h => `TEST_FILE${tdir}`,
+    filenameGenerator: async h => `TEST_START${h.filename}TEST_END`
+  });
+  app.use(multipart({ storageEngine: storage })).use(ctx => {
+    ctx.body = "im done";
+    const files = ctx.request.files as DiskStorageFile[];
+    t.is(files[0].filename, `TEST_START${files[0].filename}TEST_END`);
+    t.truthy(statSync(files[0].path));
+    t.is(files[0].size, readFileSync(FIXTURE_PATHS.SMALL_JPEG).byteLength);
+  });
+  const { port } = await t.context.listen(app);
+  const form = new FormData();
+  form.append("SMALLER", createReadStream(FIXTURE_PATHS.SMALL_JPEG));
+  await fetch("http://localhost:" + port, {
+    method: "post",
+    headers: form.getHeaders(),
+    body: form
+  });
+});
+
 test("multipart > disk storage > multiple files", async t => {
   const app = new Koa();
   t.plan(7);
