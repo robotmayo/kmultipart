@@ -9,6 +9,10 @@
     "build:dev": "tsc -w",
     "test:cov": "nyc ava -v"
   },
+  "files": [
+    "build/index.js",
+    "README.md"
+  ],
   "author": "robotmayo",
   "license": "MIT",
   "dependencies": {
