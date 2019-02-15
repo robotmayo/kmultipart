@@ -1,6 +1,6 @@
 # kmultipart
 
-A multipart body parser for koa.
+A multipart body parser for koa. Definitely needs more eyes and testing before use in production.
 
 ## Install
 
